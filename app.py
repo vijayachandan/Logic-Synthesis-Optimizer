@@ -239,8 +239,9 @@ if result:
     )
 
     with tab1:
-        diagram_path = draw_gate_diagram(result["optimized_expression"])
-        st.image(diagram_path, width=900)
+        diagram = draw_gate_diagram(result["optimized_expression"])
+        st.graphviz_chart(diagram)
+
 
     with tab2:
         tt_df = pd.DataFrame(
