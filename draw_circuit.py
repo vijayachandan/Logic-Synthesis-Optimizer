@@ -1,29 +1,31 @@
 # draw_circuit.py
-# Draws a gate-level circuit diagram from a DICT netlist
-
 from graphviz import Digraph
 from simple_netlist import generate_netlist
 
-
-def draw_gate_diagram(expr_str, output_name="gate_level_circuit"):
+def draw_gate_diagram(expr):
     """
-    Draw gate-level circuit and return PNG path.
+    Streamlit-safe gate diagram generator.
+    Returns a Graphviz Digraph (NO .render()).
     """
 
-    netlist = generate_netlist(expr_str)
+    netlist = generate_netlist(expr)
 
-    dot = Digraph(format="png")
+    dot = Digraph()
     dot.attr(rankdir="LR")
 
-    # Draw nodes
-    for gate in netlist:
-        shape = "oval" if gate == "F" else "box"
-        dot.node(gate, gate, shape=shape)
-
-    # Draw edges
     for gate, inputs in netlist.items():
+        gate_type = gate.split("_")[0]
+
+        if gate_type == "AND":
+            dot.node(gate, "AND", shape="box")
+        elif gate_type == "OR":
+            dot.node(gate, "OR", shape="box")
+        elif gate_type == "NOT":
+            dot.node(gate, "NOT", shape="box")
+        else:
+            dot.node(gate, gate)
+
         for inp in inputs:
             dot.edge(inp, gate)
 
-    path = dot.render(output_name, cleanup=True)
-    return path
+    return dot
